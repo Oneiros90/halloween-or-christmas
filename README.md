@@ -35,12 +35,12 @@ The page is meant to run unattended on a TV:
 
 - No zoom, no scroll, no text selection.
 - Viewport scaling is locked.
-- Assets for every season are preloaded as blob URLs, so the midnight change is a swap of opacity and playback, not a new download.
+- Assets for every season are preloaded up front, so the midnight change is a swap of opacity and playback, not a new download.
 - The clock is visible immediately. Media appear as soon as that season's files are ready.
 
 ### Debug clock
 
-Hold **Ctrl** and scroll the mouse wheel over a clock field (hours, minutes, seconds, day, month, or year) to nudge that unit. Time keeps running from the new instant, so you can walk the calendar and watch the seasons change. Refreshing the page restores the real system clock. The offset is memory-only.
+Scroll the mouse wheel (or the Magic Remote wheel) over a clock field (hours, minutes, seconds, day, month, or year) to nudge that unit. Time keeps running from the new instant, so you can walk the calendar and watch the seasons change. Refreshing the page restores the real system clock. The offset is memory-only.
 
 ## How it works
 
@@ -60,11 +60,11 @@ GitHub Pages does not list directories, so the app cannot discover files at runt
 
 A `requestAnimationFrame` loop reads `Date.now() + offset`. `themeFor()` maps that virtual date onto one of the three seasons. The debug wheel changes `offset` by adding calendar units (seconds wrap into minutes, months clamp the day so 31 January minus one month stays in December).
 
-The current season is shown as soon as its blobs are ready. If you skip ahead to a season that is still loading, the previous one stays on screen until the new one can appear.
+The current season is shown as soon as its files are ready. If you skip ahead to a season that is still loading, the previous one stays on screen until the new one can appear.
 
 ### Media
 
-All three seasons are fetched in parallel (`fetch` → `blob` → `URL.createObjectURL`). Hidden seasons stay in the DOM at opacity 0 with their first frame decoded. Cover and contain are computed in JavaScript from `videoWidth` / `naturalWidth` and the viewport size, without `object-fit`, so older WebViews still layout correctly.
+Images are warmed with `Image()`. Video and audio use normal HTTP URLs on `<video>` / `<audio>` (with a typed `<source>`), because webOS TV does not play `blob:` media. Hidden seasons stay in the DOM at opacity 0. Cover and contain are computed in JavaScript from `videoWidth` / `naturalWidth` and the viewport size, without `object-fit`, so older WebViews still layout correctly.
 
 Videos are `muted`, `volume = 0`, `playsinline`, and restarted on `ended` because some TVs ignore the `loop` attribute. Music autoplays; if the browser blocks it, the first click, tap, or key starts it. Changing season stops and rewinds the previous track before starting the new one.
 

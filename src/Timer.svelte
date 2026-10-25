@@ -25,9 +25,6 @@
   }
 
   function wheel(unit: ClockUnit, event: WheelEvent): void {
-    if (!event.ctrlKey) {
-      return;
-    }
     event.preventDefault();
     event.stopPropagation();
     const delta = event.deltaY;

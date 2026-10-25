@@ -36,4 +36,48 @@ export function silenceVideo(video: HTMLVideoElement): void {
   video.muted = true;
   video.defaultMuted = true;
   video.volume = 0;
+  video.setAttribute('muted', '');
+}
+
+export function mimeFromPath(path: string, kind: 'image' | 'video' | 'audio'): string {
+  const clean = path.split('?')[0];
+  const dot = clean.lastIndexOf('.');
+  const ext = dot === -1 ? '' : clean.slice(dot).toLowerCase();
+
+  if (kind === 'video') {
+    if (ext === '.webm') {
+      return 'video/webm';
+    }
+    if (ext === '.ogv') {
+      return 'video/ogg';
+    }
+    return 'video/mp4';
+  }
+
+  if (kind === 'audio') {
+    if (ext === '.ogg') {
+      return 'audio/ogg';
+    }
+    if (ext === '.wav') {
+      return 'audio/wav';
+    }
+    if (ext === '.m4a') {
+      return 'audio/mp4';
+    }
+    if (ext === '.aac') {
+      return 'audio/aac';
+    }
+    return 'audio/mpeg';
+  }
+
+  if (ext === '.png') {
+    return 'image/png';
+  }
+  if (ext === '.webp') {
+    return 'image/webp';
+  }
+  if (ext === '.gif') {
+    return 'image/gif';
+  }
+  return 'image/jpeg';
 }

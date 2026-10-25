@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { containRect, coverRect, silenceVideo, type Rect } from './media';
+  import { containRect, coverRect, mimeFromPath, silenceVideo, type Rect } from './media';
 
   export let src: string;
   export let kind: 'image' | 'video';
@@ -11,6 +11,9 @@
   let frame: HTMLDivElement;
   let rect: Rect = { left: 0, top: 0, width: 0, height: 0 };
   let lastActive: boolean | null = null;
+  let lastSrc = '';
+
+  $: mime = mimeFromPath(src, kind);
 
   function mediaSize(): { w: number; h: number } {
     if (!node) {
@@ -76,9 +79,8 @@
       }
     }
     layout();
-    playVideo();
-    if (!active) {
-      pauseVideo(true);
+    if (active) {
+      playVideo();
     }
   }
 
@@ -105,6 +107,21 @@
     silenceVideo(node as HTMLVideoElement);
   }
 
+  function onError(): void {
+    if (!node || kind !== 'video') {
+      return;
+    }
+    const video = node as HTMLVideoElement;
+    try {
+      video.load();
+    } catch (err) {
+      void err;
+    }
+    if (active) {
+      playVideo();
+    }
+  }
+
   function syncPlayback(isActive: boolean): void {
     if (lastActive === isActive) {
       return;
@@ -115,6 +132,12 @@
     } else {
       pauseVideo(true);
     }
+  }
+
+  $: if (node && kind === 'video' && src && src !== lastSrc) {
+    lastSrc = src;
+    silenceVideo(node as HTMLVideoElement);
+    (node as HTMLVideoElement).load();
   }
 
   $: if (node) {
@@ -137,7 +160,6 @@
   {#if kind === 'video'}
     <video
       bind:this={node}
-      {src}
       muted
       loop
       playsinline
@@ -145,11 +167,15 @@
       disablepictureinpicture
       on:loadedmetadata={onReady}
       on:loadeddata={layout}
+      on:canplay={onReady}
       on:ended={onEnded}
+      on:error={onError}
       on:volumechange={onVolumeChange}
       on:play={onVolumeChange}
       style="left:{rect.left}px;top:{rect.top}px;width:{rect.width}px;height:{rect.height}px"
-    />
+    >
+      <source {src} type={mime} />
+    </video>
   {:else}
     <img
       bind:this={node}

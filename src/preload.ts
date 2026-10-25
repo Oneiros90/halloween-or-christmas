@@ -1,4 +1,4 @@
-import type { ThemeAssets } from './generated/manifest';
+import type { SlotAsset, ThemeAssets } from './generated/manifest';
 
 export type ThemeUrls = {
   background: string | null;
@@ -6,28 +6,34 @@ export type ThemeUrls = {
   music: string | null;
 };
 
-function fetchBlobUrl(assetPath: string): Promise<string | null> {
-  return fetch(assetPath)
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error('Failed to fetch ' + assetPath);
-      }
-      return res.blob();
-    })
-    .then((blob) => URL.createObjectURL(blob))
-    .catch(() => null);
+function warmImage(path: string): Promise<string> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    const done = () => {
+      resolve(path);
+    };
+    image.onload = done;
+    image.onerror = done;
+    image.src = path;
+  });
+}
+
+function assetUrl(asset: SlotAsset | null): Promise<string | null> {
+  if (!asset) {
+    return Promise.resolve(null);
+  }
+  if (asset.kind === 'image') {
+    return warmImage(asset.path);
+  }
+  return Promise.resolve(asset.path);
 }
 
 export function preloadTheme(assets: ThemeAssets): Promise<ThemeUrls> {
-  const background = assets.background
-    ? fetchBlobUrl(assets.background.path)
-    : Promise.resolve(null);
-  const foreground = assets.foreground
-    ? fetchBlobUrl(assets.foreground.path)
-    : Promise.resolve(null);
-  const music = assets.music ? fetchBlobUrl(assets.music.path) : Promise.resolve(null);
-
-  return Promise.all([background, foreground, music]).then((parts) => {
+  return Promise.all([
+    assetUrl(assets.background),
+    assetUrl(assets.foreground),
+    assetUrl(assets.music),
+  ]).then((parts) => {
     return {
       background: parts[0],
       foreground: parts[1],
