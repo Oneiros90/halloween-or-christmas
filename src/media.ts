@@ -67,6 +67,9 @@ export function mimeFromPath(path: string, kind: 'image' | 'video' | 'audio'): s
     if (ext === '.aac') {
       return 'audio/aac';
     }
+    if (ext === '.mp3') {
+      return 'audio/mp3';
+    }
     return 'audio/mpeg';
   }
 

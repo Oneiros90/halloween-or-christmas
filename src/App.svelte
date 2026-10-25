@@ -4,7 +4,7 @@
   import { getVirtualDate } from './clock';
   import { themeFor } from './theme';
   import { preloadTheme, type ThemeUrls } from './preload';
-  import { attachMusic, setMusicTheme } from './music';
+  import { attachMusic, setMusicTheme, unlockMusic } from './music';
   import ThemePane from './ThemePane.svelte';
   import Timer from './Timer.svelte';
 
@@ -69,7 +69,7 @@
   });
 </script>
 
-<div class="stage">
+<div class="stage" on:pointerdown={unlockMusic} on:click={unlockMusic} on:keydown={unlockMusic}>
   {#each THEME_IDS as id}
     <ThemePane spec={MANIFEST[id]} urls={urls[id]} active={ready[id] && shown === id} />
   {/each}
@@ -101,6 +101,6 @@
     height: 100%;
     overflow: hidden;
     background: #000;
-    pointer-events: none;
+    pointer-events: auto;
   }
 </style>

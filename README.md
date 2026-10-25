@@ -64,9 +64,9 @@ The current season is shown as soon as its files are ready. If you skip ahead to
 
 ### Media
 
-Images are warmed with `Image()`. Video and audio use normal HTTP URLs on `<video>` / `<audio>` (with a typed `<source>`), because webOS TV does not play `blob:` media. Hidden seasons stay in the DOM at opacity 0. Cover and contain are computed in JavaScript from `videoWidth` / `naturalWidth` and the viewport size, without `object-fit`, so older WebViews still layout correctly.
+Images are warmed with `Image()`. Video uses a normal HTTP URL on `<video>` with a typed `<source>`, because webOS TV does not play `blob:` media. Hidden seasons stay in the DOM at opacity 0. Cover and contain are computed in JavaScript from `videoWidth` / `naturalWidth` and the viewport size, without `object-fit`, so older WebViews still layout correctly.
 
-Videos are `muted`, `volume = 0`, `playsinline`, and restarted on `ended` because some TVs ignore the `loop` attribute. Music autoplays; if the browser blocks it, the first click, tap, or key starts it. Changing season stops and rewinds the previous track before starting the new one.
+Videos are `muted`, `volume = 0`, `playsinline`, and restarted on `ended` because some TVs ignore the `loop` attribute. Music is decoded with the Web Audio API rather than an `<audio>` tag: webOS can play only one HTML media element at a time, and the background video already uses that slot. If the audio context starts suspended, the first click, Magic Remote OK, key, or wheel resumes it. Changing season stops the previous track before starting the new one.
 
 Fonts are self-hosted in `assets/fonts` (Big Shoulders Display for the time, Cormorant Garamond for the date), with `woff2` and `woff` for older engines.
 

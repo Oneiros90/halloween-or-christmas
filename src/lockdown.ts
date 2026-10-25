@@ -23,6 +23,12 @@ function isZoomKey(event: KeyboardEvent): boolean {
 }
 
 export function lockPage(): void {
+  document.body.setAttribute('tabindex', '0');
+  try {
+    document.body.focus();
+  } catch (err) {
+    void err;
+  }
   document.addEventListener('wheel', block, { passive: false, capture: true });
   document.addEventListener('touchmove', block, { passive: false, capture: true });
   document.addEventListener('selectstart', block, true);

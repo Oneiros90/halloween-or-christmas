@@ -1,5 +1,6 @@
 <script lang="ts">
   import { addOffset, type ClockUnit } from './clock';
+  import { unlockMusic } from './music';
 
   export let date: Date;
   export let onChange: () => void;
@@ -25,6 +26,7 @@
   }
 
   function wheel(unit: ClockUnit, event: WheelEvent): void {
+    unlockMusic();
     event.preventDefault();
     event.stopPropagation();
     const delta = event.deltaY;
