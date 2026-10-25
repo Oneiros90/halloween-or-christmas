@@ -4,6 +4,8 @@
   export let date: Date;
   export let onChange: () => void;
 
+  const monthFormat = new Intl.DateTimeFormat(undefined, { month: 'long' });
+
   const acc: Record<ClockUnit, number> = {
     day: 0,
     month: 0,
@@ -42,8 +44,16 @@
     onChange();
   }
 
+  function monthNameOf(value: Date): string {
+    const name = monthFormat.format(value);
+    if (!name) {
+      return '';
+    }
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
   $: day = date.getDate();
-  $: month = date.getMonth() + 1;
+  $: monthName = monthNameOf(date);
   $: year = date.getFullYear();
   $: hour = date.getHours();
   $: minute = date.getMinutes();
@@ -51,15 +61,17 @@
 </script>
 
 <div class="timer">
-  <div class="row">
-    <span on:wheel|preventDefault|stopPropagation={(e) => wheel('day', e)}>{pad(day, 2)}</span><span class="sep">.</span><span
-      on:wheel|preventDefault|stopPropagation={(e) => wheel('month', e)}>{pad(month, 2)}</span
-    ><span class="sep">.</span><span on:wheel|preventDefault|stopPropagation={(e) => wheel('year', e)}>{pad(year, 4)}</span>
-  </div>
-  <div class="row">
+  <div class="time">
     <span on:wheel|preventDefault|stopPropagation={(e) => wheel('hour', e)}>{pad(hour, 2)}</span><span class="sep">:</span><span
       on:wheel|preventDefault|stopPropagation={(e) => wheel('minute', e)}>{pad(minute, 2)}</span
     ><span class="sep">:</span><span on:wheel|preventDefault|stopPropagation={(e) => wheel('second', e)}>{pad(second, 2)}</span>
+  </div>
+  <div class="date">
+    <span on:wheel|preventDefault|stopPropagation={(e) => wheel('day', e)}>{day}</span>
+    {' '}
+    <span class="month" on:wheel|preventDefault|stopPropagation={(e) => wheel('month', e)}>{monthName}</span>
+    {' '}
+    <span on:wheel|preventDefault|stopPropagation={(e) => wheel('year', e)}>{year}</span>
   </div>
 </div>
 
@@ -70,20 +82,32 @@
     bottom: 4vh;
     z-index: 20;
     color: #fff;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 4.6vw;
-    line-height: 1.05;
-    font-weight: 700;
     text-align: right;
     white-space: nowrap;
     pointer-events: auto;
-    text-shadow: 0 0 4px #000, 0 2px 8px #000;
+    text-shadow: 0 0 6px #000, 0 2px 12px #000;
     -webkit-user-select: none;
     user-select: none;
   }
 
-  .row {
-    display: block;
+  .time {
+    font-family: "Big Shoulders Display", "Arial Narrow", "Helvetica Neue", sans-serif;
+    font-size: 9.4vw;
+    font-weight: 700;
+    line-height: 0.86;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+    -webkit-font-feature-settings: "tnum" 1, "lnum" 1;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+
+  .date {
+    margin-top: 0.8vw;
+    font-family: "Cormorant Garamond", Palatino, "Palatino Linotype", serif;
+    font-size: 2.55vw;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.08em;
   }
 
   span {
@@ -93,9 +117,10 @@
 
   .sep {
     pointer-events: none;
-    display: inline-block;
-    width: 0.45em;
-    margin: 0 -0.05em;
-    text-align: center;
+    margin: 0 0.02em;
+  }
+
+  .month {
+    margin: 0;
   }
 </style>

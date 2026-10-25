@@ -21,6 +21,8 @@ const MIME: Record<string, string> = {
   '.wav': 'audio/wav',
   '.m4a': 'audio/mp4',
   '.aac': 'audio/aac',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
 };
 
 function assetsPlugin(): Plugin {
