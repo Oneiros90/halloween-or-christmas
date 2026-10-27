@@ -24,7 +24,7 @@ export const MANIFEST: Record<ThemeId, ThemeAssets> = {
   christmas: {
     background: { path: "./assets/christmas/background.mp4?v=a3c5de5c36bd", kind: "video" },
     foreground: { path: "./assets/christmas/foreground.png?v=395ca1a546f0", kind: "image" },
-    music: { path: "./assets/christmas/music.mp3?v=d8dcee6b0689", kind: "audio" },
+    music: { path: "./assets/christmas/music.mp3?v=9134377b8d5b", kind: "audio" },
   },
   default: {
     background: { path: "./assets/default/background.jpg?v=74120789dbdf", kind: "image" },
